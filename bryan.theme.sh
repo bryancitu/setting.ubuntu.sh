@@ -72,8 +72,9 @@ icon_user="💁  "
 icon_host=" @ 💻  "
 icon_directory=" in 📁  "
 icon_branch="🌿"
-icon_end="└┤"
-icon_end2="├─❯ "
+icon_end="└["
+icon_end2="]‑"
+icon_end3="$ "
 
 #bryan config
 platform='unknown'
@@ -136,7 +137,7 @@ bg_color() {
         yellow)     echo 43;;
         blue)       echo 44;;
         magenta)    echo 45;;
-        cyan)       echo 46\;5\;166;;
+        cyan)       echo 46;;
         white)      echo 47;;
         orange)     echo 48\;5\;166;;
     esac;
@@ -205,7 +206,7 @@ prompt_segment() {
         PR="$PR$(ansi codes[@]) "
     else
         debug "no current BG, codes is $codes[@]"
-        PR="$PR$(ansi codes[@]) "
+        PR="$PR$(ansi codes[@])"
     fi
     CURRENT_BG=$1
     [[ -n $3 ]] && PR="$PR$3"
@@ -214,12 +215,13 @@ prompt_segment() {
 # End the prompt, closing any open segments
 prompt_end() {
     if [[ -n $CURRENT_BG ]]; then
+        # declare -a codes=($(text_effect reset) $(fg_color $CURRENT_BG))
         declare -a codes=($(text_effect reset) $(fg_color $CURRENT_BG))
         PR="$PR $(ansi codes[@])$SEGMENT_SEPARATOR"
     fi
-    declare -a reset=($(text_effect reset))
-    PR="$PR $(ansi reset[@])"
-    CURRENT_BG=''
+    # declare -a reset=($(text_effect reset))
+    # PR="$PR $(ansi reset[@])"
+    # CURRENT_BG=''
 }
 
 ### virtualenv prompt
@@ -235,7 +237,7 @@ prompt_virtualenv() {
 
         color=cyan
         prompt_segment $color $PRIMARY_FG
-        prompt_segment $color white "$(basename $VENV_VERSION)"
+        prompt_segment $color white " py-$VENV_VERSION$(_omb_prompt_print_python_venv)"
     fi
 }
 
@@ -281,7 +283,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-    prompt_segment blue ${_omb_prompt_bold_teal} '\w'
+    prompt_segment blue white '\w'
 }
 
 # Status:
@@ -458,7 +460,10 @@ _omb_theme_PROMPT_COMMAND() {
     fi
 
 
-    PS1="\n${_omb_prompt_bold_teal}${icon_start}${PR}$(_omb_prompt_print_python_venv)${_omb_prompt_normal}${icon_directory}${_omb_prompt_bold_purple}\W${_omb_prompt_normal}\$([[ -n \$(git branch 2> /dev/null) ]] && echo \" on ${icon_branch}  \")${_omb_prompt_white}$(scm_prompt_info)${_omb_prompt_normal}\n${_omb_prompt_bold_teal}${icon_end}${_omb_prompt_bold_teal} \@ ${_omb_prompt_bold_teal}${icon_end2}${_omb_prompt_normal}"
+    PS1="\n${_omb_prompt_bold_teal}${icon_start}${PR}${_omb_prompt_normal}\n${_omb_prompt_bold_teal}${icon_end}${_omb_prompt_bold_teal}\@${_omb_prompt_bold_teal}${icon_end2}${_omb_prompt_bold_blue}${icon_end3}${_omb_prompt_normal}"
     PS2="${icon_end}"
 }
 _omb_util_add_prompt_command _omb_theme_PROMPT_COMMAND
+
+
+# scm_prompt_info ---> git satus
