@@ -72,7 +72,8 @@ icon_user="💁  "
 icon_host=" @ 💻  "
 icon_directory=" in 📁  "
 icon_branch="🌿"
-icon_end="└❯ "
+icon_end="└┤"
+icon_end2="├─❯ "
 
 #bryan config
 platform='unknown'
@@ -135,7 +136,7 @@ bg_color() {
         yellow)     echo 43;;
         blue)       echo 44;;
         magenta)    echo 45;;
-        cyan)       echo 46;;
+        cyan)       echo 46\;5\;166;;
         white)      echo 47;;
         orange)     echo 48\;5\;166;;
     esac;
@@ -280,7 +281,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-    prompt_segment blue black '\w'
+    prompt_segment blue ${_omb_prompt_bold_teal} '\w'
 }
 
 # Status:
@@ -457,7 +458,7 @@ _omb_theme_PROMPT_COMMAND() {
     fi
 
 
-    PS1="\n${_omb_prompt_bold_teal}${icon_start}${PR}$(_omb_prompt_print_python_venv)${_omb_prompt_normal}${icon_directory}${_omb_prompt_bold_purple}\W${_omb_prompt_normal}\$([[ -n \$(git branch 2> /dev/null) ]] && echo \" on ${icon_branch}  \")${_omb_prompt_white}$(scm_prompt_info)${_omb_prompt_normal}\n${_omb_prompt_bold_teal}${icon_end}${_omb_prompt_normal}"
+    PS1="\n${_omb_prompt_bold_teal}${icon_start}${PR}$(_omb_prompt_print_python_venv)${_omb_prompt_normal}${icon_directory}${_omb_prompt_bold_purple}\W${_omb_prompt_normal}\$([[ -n \$(git branch 2> /dev/null) ]] && echo \" on ${icon_branch}  \")${_omb_prompt_white}$(scm_prompt_info)${_omb_prompt_normal}\n${_omb_prompt_bold_teal}${icon_end}${_omb_prompt_bold_teal} \@ ${_omb_prompt_bold_teal}${icon_end2}${_omb_prompt_normal}"
     PS2="${icon_end}"
 }
 _omb_util_add_prompt_command _omb_theme_PROMPT_COMMAND
