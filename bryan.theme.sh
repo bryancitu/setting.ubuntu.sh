@@ -83,7 +83,7 @@ if [[ $(uname) == 'Linux' ]]; then
 elif [[ $(uname) == 'FreeBSD' ]]; then
    platform='freebsd'
 fi
-                    
+
 
 ######################################################################
 DEBUG=0
@@ -226,18 +226,37 @@ prompt_end() {
 
 ### virtualenv prompt
 prompt_virtualenv() {
-    if [[ -n $VIRTUAL_ENV ]]; then
-        # Python could output the version information in both stdout and
-        # stderr (e.g. if using pyenv, the output goes to stderr).
-        VERSION_OUTPUT=$($VIRTUAL_ENV/bin/python --version 2>&1)
+    local py_version
 
-        # The last word of the output of `python --version`
-        # corresponds to the version number.
-        VENV_VERSION=$(echo $VERSION_OUTPUT | awk '{print $NF}')
+    # Si hay virtualenv activo
+    if [[ -n $VIRTUAL_ENV ]]; then
+        py_version=$($VIRTUAL_ENV/bin/python --version 2>&1 | awk '{print $NF}')
+        color=cyan
+        prompt_segment $color white " py-${py_version} $(_omb_prompt_print_python_venv)"
+        return
+    fi
+
+    # Si NO hay venv pero estamos en proyecto Python
+    if ls *.py >/dev/null 2>&1 || [[ -f pyproject.toml || -f requirements.txt ]]; then
+        py_version=$(python3 --version 2>/dev/null | awk '{print $NF}')
+        [[ -n $py_version ]] || return
 
         color=cyan
-        prompt_segment $color $PRIMARY_FG
-        prompt_segment $color white " py-$VENV_VERSION$(_omb_prompt_print_python_venv)"
+        prompt_segment $color white " py-${py_version}"
+    fi
+}
+
+
+prompt_node() {
+    # Mostrar solo si hay proyecto Node
+    if [[ -f package.json ]]; then
+        local node_version
+        node_version=$(node -v 2>/dev/null)
+
+        if [[ -n $node_version ]]; then
+            color=magenta
+            prompt_segment $color white " node-${node_version}"
+        fi
     fi
 }
 
@@ -423,6 +442,7 @@ build_prompt() {
     # [[ -z ${AG_NO_HIST+x} ]] && prompt_histdt
     # [[ -z ${AG_NO_CONTEXT+x} ]] && prompt_context
     prompt_virtualenv
+    prompt_node
     prompt_dir
     prompt_git
     prompt_end
